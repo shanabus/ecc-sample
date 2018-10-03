@@ -1,0 +1,21 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "charset": "utf-8",
+        "strict": true,
+        "experimentalDecorators": true,
+        "jsx": "react",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        },
+        "lib": [
+            "dom",
+            "es2015",
+            "es2017"
+        ],
+    }
+}
