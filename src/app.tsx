@@ -7,7 +7,7 @@ import SidebarMenu from '@/components/sidebarmenu'
 import NavBar from '@/components/navbar'
 import Footer from '@/components/footer'
 import EmployeeStore from '@/store/employees';
-import Employees from '@/views/employees';
+import EmployeesView from '@/views/employees';
 
 initializeIcons(/* optional base url */);
 
@@ -29,7 +29,7 @@ export default class extends React.Component {
                         </div>        
                         <div className="body">
                             <div className="content">
-                                <Employees />
+                                <EmployeesView />
                             </div>
                             <div className="sidebar">
                                 <SidebarMenu />
