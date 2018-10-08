@@ -67,9 +67,9 @@ export default class EmployeeStore {
 export class Employee {
 
     id: string
-    name: string
+    @observable public name: string
     salary: number
-    
+
     @observable dependents: string[]
 
     constructor(name: string, salary: number){

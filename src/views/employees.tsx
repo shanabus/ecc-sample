@@ -169,7 +169,7 @@ export default class EmployeesView extends React.Component<Props> {
     }
 
     private _onNameChanged = (value: string) => {
-        this._name = value
+        this._activeEmployee.name = value
     }
 
     private _onDependentNameChanged = (value: string) => {
@@ -177,7 +177,7 @@ export default class EmployeesView extends React.Component<Props> {
     }
 
     private _onCreateClick = async () => {
-        const { employees } = this.props.store
+        const { employees } = this.props.store        
         await employees.createEmployee(this._activeEmployee)
         this._isNewDialogOpen = false
     }
