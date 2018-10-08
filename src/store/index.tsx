@@ -9,6 +9,8 @@ export default class Store {
     constructor(employees: EmployeeStore) {
         this.employees = employees
     }
+
+    
 }
 
 
