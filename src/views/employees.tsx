@@ -4,7 +4,6 @@ import { inject, observer } from 'mobx-react'
 import { observable, computed } from 'mobx'
 import { CommandBar, ICommandBarItemProps, Selection, Dialog, DialogType, TextField, DialogFooter, PrimaryButton, DefaultButton } from 'office-ui-fabric-react'
 import Store from '@/store'
-import { AddEmployeePanel } from '@/components/addemployee'
 import { Employee } from '@/store/employees'
 import Dependents from '@/components/dependents'
 
@@ -28,9 +27,9 @@ export default class EmployeesView extends React.Component<Props> {
 
     private static _columns: IColumn[] = [
         { key: 'name', fieldName: 'name', name: 'Name', minWidth: 100, isResizable: true },
-        { key: 'last-modified', fieldName: 'dateLastModified', name: 'Last Modified', minWidth: 150 },
         { key: 'dependents', fieldName: 'dependents', name: 'Dependents', minWidth: 100 },
-        { key: 'cost', fieldName: 'cost', name: 'Cost', minWidth: 100 }
+        { key: 'biweeklycost', fieldName: 'biweeklycost', name: 'Biweekly Cost', minWidth: 100 },
+        { key: 'annualcost', fieldName: 'annualcost', name: 'Annual Cost', minWidth: 100 },
     ]
 
     private _selection: Selection
@@ -38,6 +37,7 @@ export default class EmployeesView extends React.Component<Props> {
     constructor(props: Props) {
         super(props)
         this._isNewDialogOpen = false
+        this._isNewEmployee = false
         this._name = ''
         this._dependent = ''
         this._selection = new Selection({
@@ -46,7 +46,7 @@ export default class EmployeesView extends React.Component<Props> {
                 this.props.store.employees.setSelection(indices)
             }
         })        
-        this._activeEmployee = new Employee("", 2000)
+        this._activeEmployee = new Employee("")
     }
 
     async componentDidMount() {
@@ -65,7 +65,8 @@ export default class EmployeesView extends React.Component<Props> {
         const items = emplStore.employees.map(empl => ({
             key: empl.id,
             name: empl.name,
-            cost: empl.cost(),
+            biweeklycost: empl.getBiWeeklyCob().toFixed(2),
+            annualcost: empl.getAnnualCob().toFixed(2),
             dependents: empl.dependents.length
         }))
         const commandItems: ICommandBarItemProps[] = [
@@ -115,48 +116,88 @@ export default class EmployeesView extends React.Component<Props> {
                         type: DialogType.largeHeader,
                         onDismiss: this._onNewDialogClose,
                         showCloseButton: true,
-                        title: 'New Employee',
-                        subText:
-                          '...'
+                        title: this._isNewEmployee? 'New Employee' : 'Edit Employee',                        
                       }}
                       modalProps={{
                         isBlocking: true,
                         containerClassName: 'ms-dialogMainOverride'
                       }}          
                     >
-                    <div className="ms-Grid">
+                    <div className="ms-Grid" dir="ltr">
                       <div className="ms-Grid-row">
-                        <div className="ms-Grid-col">
-                            <TextField label="Name" type="text" className="ms-input" value={this._activeEmployee.name} onChanged={this._onNameChanged} />
+                        <div className="ms-Grid-col ms-sm6">
+                            <div className="ms-Grid-row">
+                            <div className="ms-Grid-col">
+                                <TextField label="Name" type="text" className="ms-input" value={this._activeEmployee.name} onChanged={this._onNameChanged} />
+                                <br />
+                            </div>
+                        </div>
+                        <div className="ms-Grid-row">
+                            <div className="ms-Grid-col">
+                                <label>Dependents:</label>                                      
+                            </div>
+                        </div>        
+                        <div className="ms-Grid-row">
+                            <div className="ms-Grid-col ms-sm8">
+                                <TextField placeholder="Dependent Name" type="text" className="ms-input" value={this._dependent} onChanged={this._onDependentNameChanged} />                    
+                            </div>
+                            <div className="ms-Grid-col ms-sm4">
+                                <DefaultButton onClick={this._onAddDependentClick}>Add</DefaultButton>
+                            </div>
+                        </div>
+                        <div className="ms-Grid-row">
+                            <div className="ms-Grid-col">                  
+                                <br />
+                                <Dependents employee={this._activeEmployee} />
+                            </div>
+                        </div>   
+                        </div>
+                        <div className="ms-Grid-col ms-sm5 ms-smPush1">
                             <br />
+                            <div className="ms-Grid-row">
+                                <div className="ms-Grid-col ms-sm7">
+                                    Biweekly Cost:
+                                </div>
+                                <div className="ms-Grid-col ms-sm5 ms-textAlignRight biweekly-cob">
+                                    {this._activeEmployee.getBiWeeklyCob().toFixed(2)}
+                                </div>
+                            </div>
+
+                            <br />
+
+                            <div className="ms-Grid-row">
+                                <div className="ms-Grid-col ms-sm7">
+                                    Annual Cost:     
+                                </div>
+                                <div className="ms-Grid-col ms-sm5 ms-textAlignRight annual-cob">
+                                    {this._activeEmployee.getAnnualCob().toFixed(2)}
+                                </div>
+                            </div>
+
+                            <br />
+                            <br />
+                            
+                            <div className="ms-Grid-row">
+                                <div className="ms-Grid-col ms-sm8">
+                                    Annual after Costs:     
+                                </div>
+                                <div className="ms-Grid-col ms-sm4 ms-textAlignRight">
+                                    {this._activeEmployee.getAnnualSalaryAfterCob().toFixed(2)}
+                                </div>
+                            </div>
+
+                            <br />
+                            
                         </div>
                       </div>
-                      <div className="ms-Grid-row">
-                        <div className="ms-Grid-col">
-                            <label>Dependents:</label>                                      
-                        </div>
-                      </div>        
-                      <div className="ms-Grid-row">
-                        <div className="ms-Grid-col ms-sm8">
-                            <TextField placeholder="Dependent Name" type="text" className="ms-input" value={this._dependent} onChanged={this._onDependentNameChanged} />                    
-                        </div>
-                        <div className="ms-Grid-col ms-sm4">
-                            <DefaultButton onClick={this._onAddDependentClick}>Add</DefaultButton>
-                        </div>
-                      </div>
-                      <div className="ms-Grid-row">
-                        <div className="ms-Grid-col">                  
-                            <br />
-                            <Dependents employee={this._activeEmployee} />
-                        </div>
-                      </div>   
+                      
                     </div>                    
                     <br />
                     
                     <DialogFooter>
                         { this._isNewEmployee? 
                             <React.Fragment>
-                                <PrimaryButton onClick={this._onCreateClick} hidden={!this._isNewEmployee}>Create</PrimaryButton>
+                                <PrimaryButton onClick={this._onCreateClick} hidden={!this._isNewEmployee}>Create</PrimaryButton> &nbsp; 
                                 <DefaultButton onClick={this._onNewDialogClose}>Cancel</DefaultButton>
                             </React.Fragment>
                             : <DefaultButton onClick={this._onUpdateClick} hidden={this._isNewEmployee}>Save &amp; Close</DefaultButton>

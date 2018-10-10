@@ -10,6 +10,15 @@ function dist(...paths: string[]) {
     return path.resolve(__dirname, '..', 'dist', ...paths)
 }
 
+declare module 'webpack' {
+    export interface Configuration {
+        devServer: {
+            historyApiFallback: boolean,
+            contentBase: string
+        }
+    }
+}
+
 const config: webpack.Configuration = {
     mode: (process.env.NODE_ENV === 'development' ? 'development' : 'production'),
     entry: {
@@ -18,7 +27,8 @@ const config: webpack.Configuration = {
     output: {
         path: dist(),
         filename: '[name].js',
-        pathinfo: false
+        pathinfo: false,
+        publicPath: '/'
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
@@ -59,7 +69,11 @@ const config: webpack.Configuration = {
         new HtmlWebpackPlugin({
             template: src('index.html')
         })
-    ]
+    ],
+    devServer: {
+        historyApiFallback: true,
+        contentBase: dist()
+    }
 }
 
 export default config
