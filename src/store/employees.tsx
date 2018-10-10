@@ -4,7 +4,7 @@ import * as uuid from 'uuid'
 export default class EmployeeStore {
     
     @observable
-    public readonly employees: Employee[]
+    public readonly employees: Array<Employee>
     @observable 
     public readonly selectedEmployees: number[]
 
@@ -33,10 +33,16 @@ export default class EmployeeStore {
 
     @action
     deleteSelectedEmployees() {
-        for (const employee of this.selectedEmployees) {
-            this.employees.splice(employee, 1)
-        }
+        let emplToDelete: Employee[] = []
+        this.selectedEmployees.forEach( (e) => {
+            emplToDelete.push(this.employees[e])
+        })
+        emplToDelete.forEach( (e) => {
+            this.employees.remove(e)
+        })
         this.selectedEmployees.splice(0)
+
+        console.log(this.employees.length + " employees")
     }
 
     @action
@@ -56,8 +62,8 @@ export default class EmployeeStore {
 
     @action
     async randomEmployee() {
-        const firstNames = ["Jim", "Carol", "Mark", "Jennifer", "Tim", "Sam", "Lori", "Devin", "Daniel", "Mary", "Steve", "Windi", "Rick", "Marcus", "July", "Marvin", "Fred"]
-        const lastNames = ["Smith", "Brown", "Gilbert", "Schultz", "Neimeyer", "Sievers", "Richards", "Johnson", "Williams", "Rodgers", "Fredrickson", "Preston", "Van Holsten", "Reed", "Poloski"]
+        const firstNames = ["Jim", "Carol", "Mark", "Rita", "Jennifer", "Tim", "Sam", "Lori", "Devin", "Daniel", "Mary", "Steve", "Windi", "Rick", "Marcus", "July", "Marvin", "Fred"]
+        const lastNames = ["Smith", "Brown", "Selick", "Gilbert", "Schultz", "Neimeyer", "Sievers", "Richards", "Johnson", "Williams", "Rodgers", "Fredrickson", "Preston", "Van Holsten", "Reed", "Poloski"]
 
         return new Employee(firstNames[Math.floor(Math.random() * firstNames.length)] + " " + lastNames[Math.floor(Math.random() * lastNames.length)], 2000)
     }
